@@ -1,19 +1,29 @@
 import { Request, response, Response } from 'express';
 import { StudentServices } from './student.services';
+import studentValidationSchema from './student.zod.validation';
 
 const createStudent = async (req: Request, res: Response) => {
   try {
     const studentData = req.body.student;
-    //will coll service fnc
-    const result = await StudentServices.createStudentIntoDB(studentData);
+
+    //Data validation schema by using zod
+    const zodParseData = studentValidationSchema.parse(studentData);
+
+    //will call service fnc
+    const result = await StudentServices.createStudentIntoDB(zodParseData);
     //send response
     res.status(200).json({
       success: true,
       message: 'student is created successfully',
       data: result,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.log(error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'something went wrong',
+      error: error,
+    });
   }
 };
 const getAllStudents = async (req: Request, res: Response) => {
@@ -27,8 +37,8 @@ const getAllStudents = async (req: Request, res: Response) => {
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: 'Failed to retrieve students',
-      error: error.message,
+      message: error.message || 'something went wrong',
+      error: error,
     });
   }
 };
@@ -42,8 +52,12 @@ const getOneStudent = async (req: Request, res: Response) => {
       message: 'single student is here',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'something went wrong',
+      error: error,
+    });
   }
 };
 const deleteAStudent = async (req: Request, res: Response) => {
@@ -55,8 +69,12 @@ const deleteAStudent = async (req: Request, res: Response) => {
       message: 'student deleted successfully',
       data: result,
     });
-  } catch (error) {
-    console.log(error);
+  } catch (error: any) {
+    res.status(500).json({
+      success: false,
+      message: error.message || 'something went wrong',
+      error: error,
+    });
   }
 };
 

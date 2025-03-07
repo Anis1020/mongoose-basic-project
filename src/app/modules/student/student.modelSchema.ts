@@ -1,14 +1,12 @@
-import { Schema, model } from 'mongoose';
-import bcrypt from 'bcryptjs';
+import { Schema, Types, model } from 'mongoose';
+
 import {
+  StudentModel,
   TGuardian,
   TLocalGuardian,
   TStudent,
   TUserName,
-  StudentModel,
-} from './student/student.interface';
-import { string } from 'zod';
-import config from '../config';
+} from './student.interface';
 
 const userNameSchema = new Schema<TUserName>({
   firstName: {
@@ -68,7 +66,13 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
 const studentSchema = new Schema<TStudent, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User id is required'],
+      unique: true,
+      ref: 'User',
+    },
+
     name: {
       type: userNameSchema,
       required: true,
@@ -107,11 +111,11 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       required: true,
     },
     profileImg: { type: String },
-    isActive: {
-      type: String,
-      enum: ['active', 'blocked'],
-      default: 'active',
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
     },
+
     isDeleted: {
       type: Boolean,
       default: false,
@@ -130,25 +134,6 @@ studentSchema.virtual('fullName').get(function () {
 });
 
 //document middleware
-//pre save middleware/ hook
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook we will save the data');
-  const user = this;
-  //hashing pass and save into db
-  user.password = await bcrypt.hashSync(
-    user.password,
-    Number(config.bcrypt_salt_round),
-  );
-  next();
-});
-
-//post save middleware /hook
-studentSchema.post('save', function (doc, next) {
-  doc.password = '';
-  // console.log(this, 'this from post');
-
-  next();
-});
 
 //Query middleware
 studentSchema.pre('find', async function (next) {

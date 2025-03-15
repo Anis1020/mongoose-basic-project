@@ -14,8 +14,9 @@ app.use('/api', router);
 
 //test route
 app.get('/', (req: Request, res: Response) => {
-  var a = 1;
-  res.send('Hello World!');
+  // Promise.reject()
+  // var a = 1;
+  // res.send('Hello World!');
 });
 
 //global error handler

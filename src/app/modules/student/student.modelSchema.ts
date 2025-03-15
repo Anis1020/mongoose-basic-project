@@ -120,6 +120,10 @@ const studentSchema = new Schema<TStudent, StudentModel>(
       type: Boolean,
       default: false,
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'academicDepartment',
+    },
   },
   {
     toJSON: {
@@ -130,7 +134,7 @@ const studentSchema = new Schema<TStudent, StudentModel>(
 
 //virtual
 studentSchema.virtual('fullName').get(function () {
-  return `${this.name.firstName} ${this.name.lastName}`;
+  return `${this?.name?.firstName} ${this?.name?.lastName}`;
 });
 
 //document middleware

@@ -46,11 +46,39 @@ export const createStudentValidationSchema = z.object({
       guardian: guardianValidationSchema,
       localGuardian: localGuardianValidationSchema,
       admissionSemester: z.string(),
+      // academicDepartment: z.string(),
       profileImg: z.string().optional(),
     }),
   }),
 });
 
+export const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+      name: userNameValidationSchema.optional(),
+      gender: z.enum(['male', 'female', 'other']).optional(),
+      dateOfBirth: z.string().min(1, 'Date of birth is required').optional(),
+      email: z.string().email('Invalid email format').optional(),
+      contactNo: z.string().min(1, 'Contact number is required').optional(),
+      emergencyContactNo: z.string().optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+        .optional(),
+      presentAddress: z.string().optional(),
+      permanentAddress: z
+        .string()
+        .min(1, 'Permanent address is required')
+        .optional(),
+      guardian: guardianValidationSchema.optional(),
+      localGuardian: localGuardianValidationSchema.optional(),
+      admissionSemester: z.string().optional(),
+      profileImg: z.string().optional(),
+      academicDepartment: z.string().optional(),
+    }),
+  }),
+});
+
 export const studentValidations = {
-  studentValidationSchema: createStudentValidationSchema,
+  createStudentValidationSchema,
+  updateStudentValidationSchema,
 };
